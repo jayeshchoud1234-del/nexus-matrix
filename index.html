@@ -4,105 +4,96 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="theme-color" content="#0b0f19">
-  <title>NEXUS // Arc Discipline System</title>
+  <meta name="theme-color" content="#0f172a">
+  <title>Simple Goal Tracker</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     body {
-      background-color: #0b0f19;
-      color: #f3f4f6;
-      font-family: system-ui, -apple-system, sans-serif;
+      background-color: #0f172a;
+      color: #f8fafc;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
-    .glass-card {
-      background: rgba(17, 24, 39, 0.85);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    .card {
+      background-color: #1e293b;
+      border: 1px solid #334155;
     }
     .sticky-col {
       position: sticky;
       left: 0;
       z-index: 20;
-      background-color: #111827;
+      background-color: #1e293b;
     }
     .sticky-header {
       position: sticky;
       top: 0;
       z-index: 30;
-      background-color: #111827;
+      background-color: #1e293b;
     }
     .cell-done {
-      background-color: rgba(16, 185, 129, 0.25);
-      border-color: #10b981;
-      color: #34d399;
+      background-color: #16a34a !important;
+      border-color: #22c55e !important;
+      color: #ffffff !important;
     }
     .cell-missed {
-      background-color: rgba(239, 68, 68, 0.25);
-      border-color: #ef4444;
-      color: #f87171;
+      background-color: #dc2626 !important;
+      border-color: #ef4444 !important;
+      color: #ffffff !important;
     }
     .cell-rest {
-      background-color: rgba(99, 102, 241, 0.25);
-      border-color: #6366f1;
-      color: #818cf8;
+      background-color: #4f46e5 !important;
+      border-color: #6366f1 !important;
+      color: #ffffff !important;
     }
     .cell-empty {
-      background-color: rgba(31, 41, 55, 0.6);
-      border-color: #374151;
-      color: #4b5563;
+      background-color: #334155 !important;
+      border-color: #475569 !important;
+      color: #94a3b8 !important;
     }
     .progress-ring-circle {
-      transition: stroke-dashoffset 0.5s ease-in-out;
+      transition: stroke-dashoffset 0.4s ease-in-out;
       transform: rotate(-90deg);
       transform-origin: 50% 50%;
     }
   </style>
 </head>
-<body class="min-h-screen pb-12">
+<body class="min-h-screen pb-12 text-base">
 
   <!-- Header -->
-  <header class="p-4 max-w-full glass-card mb-4 sticky top-0 z-40 border-b border-gray-800">
+  <header class="p-4 card mb-4 sticky top-0 z-40 border-b border-slate-700 shadow-md">
     <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-3">
       
+      <!-- Month Navigation -->
       <div class="flex items-center gap-3">
-        <button onclick="window.changeMonth(-1)" class="w-8 h-8 rounded-xl bg-gray-800 hover:bg-gray-700 text-cyan-400 font-bold border border-gray-700">◀</button>
+        <button onclick="window.changeMonth(-1)" class="w-10 h-10 rounded-lg bg-slate-700 hover:bg-slate-600 text-cyan-400 font-bold border border-slate-600 text-lg flex items-center justify-center">◀</button>
         <div class="text-center md:text-left">
-          <h1 class="text-lg font-black tracking-wider bg-gradient-to-r from-cyan-400 via-emerald-400 to-indigo-400 bg-clip-text text-transparent">
-            NEXUS // ARC MATRIX
-          </h1>
-          <p class="text-xs font-semibold text-gray-300" id="month-year-title">OCTOBER 2026</p>
+          <h1 class="text-xl font-bold tracking-wide text-white">GOAL TRACKER</h1>
+          <p class="text-xs font-semibold text-cyan-400 uppercase tracking-wider" id="month-year-title">OCTOBER 2026</p>
         </div>
-        <button onclick="window.changeMonth(1)" class="w-8 h-8 rounded-xl bg-gray-800 hover:bg-gray-700 text-cyan-400 font-bold border border-gray-700">▶</button>
+        <button onclick="window.changeMonth(1)" class="w-10 h-10 rounded-lg bg-slate-700 hover:bg-slate-600 text-cyan-400 font-bold border border-slate-600 text-lg flex items-center justify-center">▶</button>
       </div>
 
+      <!-- Quick Stats & Controls -->
       <div class="flex flex-wrap items-center justify-center gap-3">
-        <div id="license-badge" class="px-3 py-1.5 rounded-xl border text-xs font-bold flex items-center gap-1.5 bg-amber-950/40 border-amber-500/50 text-amber-400">
+        
+        <div id="license-badge" class="px-3 py-1.5 rounded-lg border text-xs font-bold bg-amber-950/60 border-amber-500/80 text-amber-300">
           ⚡ TRIAL MODE (Max 2 Goals)
         </div>
 
-        <button id="unlock-btn" onclick="window.openPaywallModal()" class="bg-gradient-to-r from-amber-400 to-emerald-400 text-black font-black px-3.5 py-1.5 rounded-xl text-xs hover:opacity-90 active:scale-95 transition shadow-lg">
+        <button id="unlock-btn" onclick="window.openPaywallModal()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold px-4 py-2 rounded-lg text-xs transition shadow">
           🔓 Unlock Lifetime Pass
         </button>
 
-        <div class="flex items-center gap-3 bg-gray-900/90 px-3 py-1.5 rounded-xl border border-gray-800 text-xs">
-          <div>
-            <span class="text-[9px] text-gray-400 uppercase tracking-widest block">Monthly Overall</span>
-            <span id="monthly-rate" class="text-sm font-black text-cyan-400">0%</span>
-          </div>
-          <div class="h-5 w-px bg-gray-800"></div>
-          <div class="flex items-center gap-2 font-bold text-[11px]">
-            <span class="text-emerald-400">✓ Done</span>
-            <span class="text-red-400">✕ Missed</span>
-            <span class="text-indigo-400">⏸ Rest</span>
-          </div>
+        <div class="bg-slate-900 px-3.5 py-1.5 rounded-lg border border-slate-700 text-xs">
+          <span class="text-[10px] text-slate-400 uppercase tracking-widest block font-bold">Monthly Score</span>
+          <span id="monthly-rate" class="text-base font-extrabold text-cyan-400">0%</span>
         </div>
 
         <div class="flex items-center gap-2">
-          <button onclick="window.exportBackup()" class="bg-gray-800 hover:bg-gray-700 border border-gray-700 text-cyan-400 px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1">
+          <button onclick="window.exportBackup()" class="bg-slate-700 hover:bg-slate-600 border border-slate-600 text-slate-200 px-3 py-1.5 rounded-lg text-xs font-bold">
             ⬇ Export
           </button>
-          <label class="bg-gray-800 hover:bg-gray-700 border border-gray-700 text-emerald-400 px-3 py-1.5 rounded-xl text-xs font-semibold cursor-pointer">
+          <label class="bg-slate-700 hover:bg-slate-600 border border-slate-600 text-emerald-400 px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer">
             ⬆ Import
             <input type="file" id="import-file" accept=".json" onchange="window.importBackup(event)" class="hidden">
           </label>
@@ -112,56 +103,75 @@
     </div>
   </header>
 
-  <main class="max-w-7xl mx-auto px-2 space-y-4">
+  <main class="max-w-7xl mx-auto px-3 space-y-4">
 
+    <!-- Simple Guide Banner -->
+    <section class="card p-3 rounded-xl flex flex-wrap items-center justify-between gap-2 bg-slate-800">
+      <div class="flex items-center gap-2">
+        <span class="text-base">📌</span>
+        <span class="text-xs font-bold text-slate-200">How to mark goals:</span>
+      </div>
+      <div class="flex flex-wrap items-center gap-2 text-xs font-bold">
+        <span class="bg-green-600 text-white px-2.5 py-1 rounded">1 Tap = ✓ Done</span>
+        <span class="bg-red-600 text-white px-2.5 py-1 rounded">2 Taps = ✕ Missed</span>
+        <span class="bg-indigo-600 text-white px-2.5 py-1 rounded">3 Taps = ⏸ Rest</span>
+        <span class="bg-slate-700 text-slate-300 border border-slate-600 px-2.5 py-1 rounded">4 Taps = Reset</span>
+      </div>
+    </section>
+
+    <!-- Overview Cards -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
       
-      <section class="glass-card p-5 rounded-2xl flex items-center justify-around">
+      <!-- Progress Donut -->
+      <section class="card p-4 rounded-xl flex items-center justify-around">
         <div>
-          <h2 class="text-xs font-bold text-cyan-400 uppercase tracking-widest">Today's Discipline</h2>
-          <p class="text-3xl font-black text-white mt-1" id="today-pct">0%</p>
-          <p class="text-xs text-gray-400 mt-1"><span id="today-done-count">0</span> / <span id="today-total-count">0</span> Goals Completed</p>
+          <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Today's Progress</h2>
+          <p class="text-3xl font-extrabold text-white mt-1" id="today-pct">0%</p>
+          <p class="text-xs text-slate-300 font-medium mt-1"><span id="today-done-count">0</span> of <span id="today-total-count">0</span> Goals Done</p>
         </div>
 
-        <div class="relative w-24 h-24 flex items-center justify-center">
+        <div class="relative w-20 h-20 flex items-center justify-center">
           <svg class="w-full h-full" viewBox="0 0 100 100">
-            <circle class="text-gray-800" stroke-width="8" stroke="currentColor" fill="transparent" r="38" cx="50" cy="50"/>
-            <circle id="progress-circle" class="text-cyan-400 progress-ring-circle" stroke-width="8" stroke-dasharray="238.76" stroke-dashoffset="238.76" stroke-linecap="round" stroke="currentColor" fill="transparent" r="38" cx="50" cy="50"/>
+            <circle class="text-slate-700" stroke-width="10" stroke="currentColor" fill="transparent" r="38" cx="50" cy="50"/>
+            <circle id="progress-circle" class="text-cyan-400 progress-ring-circle" stroke-width="10" stroke-dasharray="238.76" stroke-dashoffset="238.76" stroke-linecap="round" stroke="currentColor" fill="transparent" r="38" cx="50" cy="50"/>
           </svg>
-          <span class="absolute text-[10px] font-extrabold text-cyan-300">TODAY</span>
+          <span class="absolute text-[11px] font-bold text-cyan-300">TODAY</span>
         </div>
       </section>
 
-      <section class="glass-card p-4 rounded-2xl md:col-span-2 flex flex-col justify-between">
-        <div class="flex justify-between items-center mb-2">
-          <h2 class="text-xs font-bold text-emerald-400 uppercase tracking-widest">Daily Progression Chart</h2>
-          <span class="text-[10px] text-gray-400">Rest Days Preserved</span>
+      <!-- Consistency Line Chart -->
+      <section class="card p-4 rounded-xl md:col-span-2 flex flex-col justify-between">
+        <div class="flex justify-between items-center mb-1">
+          <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Daily Trend</h2>
+          <span class="text-xs text-slate-400 font-medium">Monthly View</span>
         </div>
-        <div class="h-28 w-full">
+        <div class="h-24 w-full">
           <canvas id="trendChart"></canvas>
         </div>
       </section>
 
     </div>
 
-    <section class="glass-card p-3 rounded-2xl flex gap-2">
-      <input id="custom-goal-input" type="text" placeholder="Add goal (e.g., Gym Session, Cricket Practice)..." class="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-xs text-gray-200 focus:outline-none focus:border-cyan-500">
-      <button onclick="window.addCustomGoal()" class="bg-gradient-to-r from-cyan-500 to-emerald-500 text-black font-extrabold px-4 py-2 rounded-xl text-xs hover:opacity-90 active:scale-95 transition">
+    <!-- Add Goal Input -->
+    <section class="card p-3 rounded-xl flex gap-2">
+      <input id="custom-goal-input" type="text" placeholder="Enter new goal (e.g., Gym, Reading, Practice)..." class="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 text-base text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-500">
+      <button onclick="window.addCustomGoal()" class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-extrabold px-5 py-2.5 rounded-lg text-sm transition">
         + Add Goal
       </button>
     </section>
 
-    <section class="glass-card rounded-2xl overflow-hidden border border-gray-800">
+    <!-- Goal Grid Table -->
+    <section class="card rounded-xl overflow-hidden">
       <div class="overflow-x-auto max-h-[60vh] overflow-y-auto">
         <table class="w-full text-left border-collapse min-w-[950px]">
           <thead class="sticky-header">
-            <tr id="table-header" class="border-b border-gray-800">
-              <th class="p-3 sticky-col text-xs font-bold text-cyan-400 uppercase tracking-wider min-w-[220px]">
-                Goals / Progression
+            <tr id="table-header" class="border-b border-slate-700">
+              <th class="p-3.5 sticky-col text-xs font-bold text-slate-300 uppercase tracking-wider min-w-[240px]">
+                Goal Name
               </th>
             </tr>
           </thead>
-          <tbody id="table-body" class="divide-y divide-gray-800/60 text-xs">
+          <tbody id="table-body" class="divide-y divide-slate-700/70 text-sm">
           </tbody>
         </table>
       </div>
@@ -169,34 +179,35 @@
 
   </main>
 
-  <div id="paywall-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
-    <div class="glass-card p-6 rounded-3xl max-w-sm w-full border border-amber-500/30 text-center space-y-4 relative">
-      <button onclick="window.closePaywallModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white font-bold text-sm">✕</button>
+  <!-- Paywall Modal -->
+  <div id="paywall-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="card p-6 rounded-2xl max-w-sm w-full text-center space-y-4 relative border-amber-500/50">
+      <button onclick="window.closePaywallModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white font-bold text-lg">✕</button>
       
-      <div class="w-12 h-12 rounded-2xl bg-amber-500/20 text-amber-400 border border-amber-500/40 flex items-center justify-center text-2xl mx-auto">
+      <div class="w-12 h-12 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/40 flex items-center justify-center text-2xl mx-auto">
         👑
       </div>
 
-      <h2 class="text-xl font-black text-white">Unlock Lifetime Pass</h2>
-      <p class="text-xs text-gray-300">
-        Unlock unlimited custom goals, historical tracking, rest-day support, and offline data backup!
+      <h2 class="text-xl font-extrabold text-white">Unlock Lifetime Pass</h2>
+      <p class="text-xs text-slate-300 leading-relaxed">
+        Unlock unlimited goal tracking, full monthly history, and backup support.
       </p>
 
-      <div class="bg-gray-900/90 p-3 rounded-2xl border border-gray-800 text-center">
-        <span class="text-2xl font-black text-emerald-400">₹499</span>
-        <span class="text-[11px] text-gray-400 block font-medium">One-Time Payment • Lifetime Access</span>
+      <div class="bg-slate-900 p-3 rounded-xl border border-slate-700 text-center">
+        <span class="text-3xl font-black text-emerald-400">₹499</span>
+        <span class="text-xs text-slate-400 block font-medium mt-0.5">One-Time Payment • Lifetime Access</span>
       </div>
 
-      <div class="text-left bg-gray-900/60 p-3 rounded-xl border border-gray-800 space-y-2 text-xs">
-        <p class="font-bold text-cyan-400">How to Unlock:</p>
-        <p class="text-gray-300">1. Pay <b>₹499</b> via UPI (Google Pay / PhonePe / Paytm).</p>
-        <p class="text-gray-300">2. Copy your <b>Device ID</b> below & send it via WhatsApp.</p>
+      <div class="text-left bg-slate-900/80 p-3.5 rounded-xl border border-slate-700 space-y-2 text-xs">
+        <p class="font-bold text-cyan-400 text-sm">How to Unlock:</p>
+        <p class="text-slate-200">1. Pay <b>₹499</b> via UPI (Google Pay / PhonePe / Paytm).</p>
+        <p class="text-slate-200">2. Copy your <b>Device ID</b> below & send it via WhatsApp.</p>
         
-        <div class="flex justify-between items-center bg-black/50 p-2 rounded-lg border border-gray-700">
-          <span class="text-gray-400 text-[11px]">Your Device ID:</span>
+        <div class="flex justify-between items-center bg-slate-950 p-2.5 rounded-lg border border-slate-700">
+          <span class="text-slate-400 text-xs font-medium">Your Device ID:</span>
           <div class="flex items-center gap-2">
-            <span id="display-device-id" class="font-mono font-bold text-amber-400 text-xs">NX-0000</span>
-            <button onclick="window.copyDeviceId()" class="bg-gray-800 hover:bg-gray-700 text-cyan-400 text-[10px] font-bold px-2 py-1 rounded border border-gray-600 active:scale-95">
+            <span id="display-device-id" class="font-mono font-bold text-amber-400 text-sm">NX-0000</span>
+            <button onclick="window.copyDeviceId()" class="bg-slate-800 hover:bg-slate-700 text-cyan-400 text-xs font-bold px-2.5 py-1 rounded border border-slate-600 active:scale-95">
               📋 Copy
             </button>
           </div>
@@ -204,17 +215,17 @@
       </div>
 
       <div class="space-y-2">
-        <input id="activation-key-input" type="text" placeholder="Enter Passkey (e.g., NEXUS-XXXXX)..." class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-xs text-gray-200 focus:outline-none focus:border-cyan-500 text-center uppercase font-mono">
-        <button onclick="window.verifyActivationKey()" class="w-full bg-gradient-to-r from-emerald-400 to-cyan-500 text-black font-black py-2.5 rounded-xl text-xs hover:opacity-90 active:scale-95 transition shadow-lg">
-          Activate Lifetime Pass
+        <input id="activation-key-input" type="text" placeholder="Enter Passkey (e.g., NEXUS-XXXXX)..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-cyan-500 text-center uppercase font-mono">
+        <button onclick="window.verifyActivationKey()" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold py-3 rounded-xl text-xs transition shadow">
+          Activate Pass
         </button>
       </div>
 
     </div>
   </div>
 
-    <script>
-    (function(){
+  <script>
+                 (function(){
       function _hash(s){var h=0x811c9dc5;for(var i=0;i<s.length;i++){h^=s.charCodeAt(i);h+=(h<<1)+(h<<4)+(h<<7)+(h<<8)+(h<<24);}return(h>>>0).toString(16);}
       var deviceId=localStorage.getItem('nexus_device_id');
       if(!deviceId){deviceId='NX-'+Math.floor(1000+Math.random()*9000);localStorage.setItem('nexus_device_id',deviceId);}
@@ -264,7 +275,7 @@
       window.exportBackup=function(){
         var dataStr="data:text/json;charset=utf-8,"+encodeURIComponent(JSON.stringify({customGoals:state.customGoals,records:state.records}));
         var a=document.createElement('a');a.setAttribute("href",dataStr);
-        a.setAttribute("download","NEXUS_ARC_BACKUP_"+new Date().toISOString().slice(0,10)+".json");
+        a.setAttribute("download","GOAL_TRACKER_BACKUP_"+new Date().toISOString().slice(0,10)+".json");
         document.body.appendChild(a);a.click();a.remove();
       };
       window.importBackup=function(e){
@@ -302,8 +313,8 @@
         if(trendChartInstance)trendChartInstance.destroy();
         trendChartInstance=new Chart(ctx,{
           type:'line',
-          data:{labels:labels,datasets:[{data:dailyPcts,borderColor:'#06b6d4',backgroundColor:'rgba(6, 182, 212, 0.15)',borderWidth:2,fill:true,tension:0.3,pointRadius:2,pointBackgroundColor:'#10b981'}]},
-          options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#6b7280',font:{size:9}}},y:{min:0,max:100,grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#6b7280',font:{size:9}}}}}
+          data:{labels:labels,datasets:[{data:dailyPcts,borderColor:'#38bdf8',backgroundColor:'rgba(56, 189, 248, 0.1)',borderWidth:2,fill:true,tension:0.2,pointRadius:2,pointBackgroundColor:'#22c55e'}]},
+          options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#94a3b8',font:{size:10,weight:'bold'}}},y:{min:0,max:100,grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#94a3b8',font:{size:10,weight:'bold'}}}}}
         });
       }
       function render(){
@@ -314,20 +325,20 @@
         var badge=document.getElementById('license-badge'),unlockBtn=document.getElementById('unlock-btn');
         var unlocked=isDeviceUnlocked();
         if(unlocked){
-          if(badge){badge.className="px-3 py-1.5 rounded-xl border text-xs font-bold flex items-center gap-1.5 bg-emerald-950/40 border-emerald-500/50 text-emerald-400";badge.innerText="👑 PRO LIFETIME UNLOCKED";}
+          if(badge){badge.className="px-3 py-1.5 rounded-lg border text-xs font-bold bg-emerald-950/60 border-emerald-500/80 text-emerald-300";badge.innerText="👑 PRO LIFETIME UNLOCKED";}
           if(unlockBtn)unlockBtn.classList.add('hidden');
         }else{
-          if(badge){badge.className="px-3 py-1.5 rounded-xl border text-xs font-bold flex items-center gap-1.5 bg-amber-950/40 border-amber-500/50 text-amber-400";badge.innerText="⚡ TRIAL MODE ("+Math.min(state.customGoals.length,2)+"/2 Goals)";}
+          if(badge){badge.className="px-3 py-1.5 rounded-lg border text-xs font-bold bg-amber-950/60 border-amber-500/80 text-amber-300";badge.innerText="⚡ TRIAL MODE ("+Math.min(state.customGoals.length,2)+"/2 Goals)";}
           if(unlockBtn)unlockBtn.classList.remove('hidden');
         }
         var headerRow=document.getElementById('table-header');
-        var headerHTML='<th class="p-3 sticky-col text-xs font-extrabold text-cyan-400 uppercase tracking-wider min-w-[220px]">Goals / Progression</th>';
+        var headerHTML='<th class="p-3.5 sticky-col text-xs font-bold text-slate-300 uppercase tracking-wider min-w-[240px]">Goal Name</th>';
         for(var day=1;day<=daysInMonth;day++){
           var dateObj=new Date(viewYear,viewMonth,day),dayName=dayNames[dateObj.getDay()];
           var isRealToday=day===realToday.getDate()&&viewMonth===realToday.getMonth()&&viewYear===realToday.getFullYear();
-          headerHTML+='<th class="p-2 text-center border-l border-gray-800 min-w-[42px] '+(isRealToday?'bg-cyan-950/80 text-cyan-300':'text-gray-400')+'">'+
-            '<span class="block text-[9px] font-semibold text-gray-500 uppercase">'+dayName+'</span>'+
-            '<span class="block text-xs font-bold">'+day+'</span>'+
+          headerHTML+='<th class="p-2 text-center border-l border-slate-700 min-w-[50px] '+(isRealToday?'bg-slate-800 text-cyan-400 font-extrabold':'text-slate-300')+'">'+
+            '<span class="block text-[10px] font-bold text-slate-400 uppercase">'+dayName+'</span>'+
+            '<span class="block text-sm font-black">'+day+'</span>'+
           '</th>';
         }
         if(headerRow)headerRow.innerHTML=headerHTML;
@@ -336,20 +347,20 @@
         var dailyDoneCounts=new Array(daysInMonth).fill(0),dailyActiveCounts=new Array(daysInMonth).fill(0);
         var activeGoalsToRender=unlocked?state.customGoals:state.customGoals.slice(0,2);
         if(activeGoalsToRender.length===0){
-          bodyHTML='<tr><td colspan="'+(daysInMonth+1)+'" class="p-8 text-center text-gray-500 text-xs font-medium">Trial Mode active. Add up to 2 goals for free to test the app!</td></tr>';
+          bodyHTML='<tr><td colspan="'+(daysInMonth+1)+'" class="p-8 text-center text-slate-400 text-sm font-semibold">Trial Mode active. Add up to 2 goals to test the app!</td></tr>';
         }else{
           activeGoalsToRender.forEach(function(habit,index){
             var res=calculateStreakAndRest(habit.id,viewYear,viewMonth,daysInMonth),seqNumber=index+1;
-            bodyHTML+='<tr class="hover:bg-gray-900/40 transition">';
-            bodyHTML+='<td class="p-3 sticky-col font-medium text-gray-200 flex justify-between items-center border-b border-gray-800">'+
+            bodyHTML+='<tr class="hover:bg-slate-800/50 transition">';
+            bodyHTML+='<td class="p-3.5 sticky-col font-medium text-slate-100 flex justify-between items-center border-b border-slate-700">'+
               '<div class="truncate pr-2">'+
-                '<span class="block font-bold text-gray-100">'+seqNumber+'. '+habit.label+'</span>'+
-                '<div class="flex gap-2 text-[10px] font-bold mt-0.5">'+
+                '<span class="block text-base font-bold text-white">'+seqNumber+'. '+habit.label+'</span>'+
+                '<div class="flex gap-2 text-xs font-bold mt-0.5">'+
                   '<span class="text-amber-400">🔥 '+res.streak+'d streak</span>'+
                   '<span class="text-indigo-400">⏸ '+res.restCount+' rest</span>'+
                 '</div>'+
               '</div>'+
-              '<button onclick="window.removeCustomGoal(\''+habit.id+'\')" title="Delete goal" class="text-gray-500 hover:text-red-400 text-xs px-1.5 py-1 rounded-lg bg-gray-800/60 border border-gray-700/50 hover:bg-red-950/40 transition">🗑</button>'+
+              '<button onclick="window.removeCustomGoal(\''+habit.id+'\')" title="Delete goal" class="text-slate-400 hover:text-red-400 text-sm px-2 py-1 rounded-lg bg-slate-800 border border-slate-700 hover:bg-red-950/40 transition">🗑</button>'+
             '</td>';
             for(var day=1;day<=daysInMonth;day++){
               var dateKey=formatDateKey(viewYear,viewMonth,day);
@@ -358,8 +369,8 @@
               if(status==='done'){cellClass='cell-done';cellContent='✓';totalDoneCells++;totalActiveCells++;dailyDoneCounts[day-1]++;dailyActiveCounts[day-1]++;}
               else if(status==='missed'){cellClass='cell-missed';cellContent='✕';totalActiveCells++;dailyActiveCounts[day-1]++;}
               else if(status==='rest'){cellClass='cell-rest';cellContent='⏸';}
-              bodyHTML+='<td class="p-1 text-center border-l border-gray-800/60 border-b border-gray-800">'+
-                '<button onclick="window.toggleCell(\''+dateKey+'\', \''+habit.id+'\')" class="w-8 h-8 rounded-lg border font-bold text-xs flex items-center justify-center transition-all active:scale-90 mx-auto '+cellClass+'">'+
+              bodyHTML+='<td class="p-1 text-center border-l border-slate-700/80 border-b border-slate-700">'+
+                '<button onclick="window.toggleCell(\''+dateKey+'\', \''+habit.id+'\')" class="w-11 h-11 rounded-xl border font-black text-lg flex items-center justify-center transition-all active:scale-90 mx-auto '+cellClass+'">'+
                   cellContent+
                 '</button>'+
               '</td>';
@@ -389,6 +400,6 @@
       render();
     })();
   </script>
-  
+
 </body>
 </html>
